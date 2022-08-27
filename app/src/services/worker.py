@@ -1,6 +1,6 @@
 import time
 
-from db.celery_db import celery
+from celery_db import celery
 
 
 @celery.task(name="create_task")

@@ -6,7 +6,7 @@ from fastapi.responses import ORJSONResponse
 from api.v1 import document, tasks
 from core.config import app_config
 from db import redis
-from db import celery_db
+import celery_db
 
 app = FastAPI(
     title=app_config.name,
