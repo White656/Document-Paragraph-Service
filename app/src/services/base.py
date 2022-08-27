@@ -1,15 +1,38 @@
-from typing import Any
+from abc import ABC, abstractmethod
 
-from typing import Protocol
-from abc import abstractmethod
+from aioredis import Redis
+from pydantic import BaseModel
 
 
-class State(Protocol):
+class ItemService(ABC):
+    def __init__(self, redis: Redis):
+        self.redis = redis
 
+    @staticmethod
     @abstractmethod
-    def set_state(self, key: str, value: str | Any) -> None:
+    def model(*args, **kwargs) -> BaseModel:
         ...
 
-    @abstractmethod
-    def get_key(self, key: str, default: str = None) -> str | Any | None:
-        ...
+    async def get_by_id(self, pk: str):
+
+        data = await self._from_cache(pk)  # пытаемся получить данные из кеша
+        if not data:  # если они не найдены, то получаем их из elasticsearch
+
+            return None
+
+        await self._put_to_cache(data)  # записываем данные в кеш
+        return data
+
+    async def _from_cache(self, pk: str):
+        data = await self.redis.get(pk)  # получаем данные из redis
+
+        if not data:  # если данных не оказалось, то возвращаем None
+            return None
+
+        data = self.model.parse_raw(data)  # переводим данные в удобный формат
+
+        return data  # возвращаем данные
+
+    async def _put_to_cache(self, item):
+        # вставляем данные в redis
+        await self.redis.set(item.id, item.json())

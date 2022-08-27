@@ -1,16 +1,13 @@
 import aioredis
 import uvicorn
-from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from fastapi_cache import FastAPICache
-from fastapi_cache.backends.redis import RedisBackend
 
-from core.config import APP_CONFIG
-from db import elastic, redis
+from core.config import app_config
+from db import redis
 
 app = FastAPI(
-    title=APP_CONFIG.name,
+    title=app_config.name,
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
     default_response_class=ORJSONResponse,
@@ -19,20 +16,14 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    # redis.redis = aioredis.from_url(f'redis://{APP_CONFIG.redis_config.host}:{APP_CONFIG.redis_config.port}',
-    #                                 encoding="utf8",
-    #                                 decode_responses=True)
-    #
-    # elastic.es = AsyncElasticsearch(
-    #     hosts=[f'{APP_CONFIG.elasticsearch_config.host}:{APP_CONFIG.elasticsearch_config.port}'])
-    # FastAPICache.init(RedisBackend(redis.redis), prefix="fastapi-cache")
-    ...
+    redis.redis = aioredis.from_url(f'redis://{app_config.redis_config.host}:{app_config.redis_config.port}',
+                                    encoding="utf8",
+                                    decode_responses=True)
 
 
 @app.on_event('shutdown')
 async def shutdown():
     await redis.redis.close()
-    await elastic.es.close()
 
 
 # Теги указываем для удобства навигации по документации
