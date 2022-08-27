@@ -3,8 +3,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+from api.v1 import document, tasks
 from core.config import app_config
 from db import redis
+from db import celery_db
 
 app = FastAPI(
     title=app_config.name,
@@ -24,12 +26,12 @@ async def startup():
 @app.on_event('shutdown')
 async def shutdown():
     await redis.redis.close()
+    await celery_db.celery.close()
 
 
 # Теги указываем для удобства навигации по документации
-# app.include_router(films.router, prefix='/api/v1/films', tags=['films'])
-# app.include_router(genres.router, prefix='/api/v1/genres', tags=['genres'])
-# app.include_router(persons.router, prefix='/api/v1/persons', tags=['persons'])
+app.include_router(document.router, prefix='/api/v1/document', tags=['document'])
+app.include_router(tasks.router, prefix='/api/v1/tasks', tags=['tasks'])
 
 if __name__ == '__main__':
     uvicorn.run(

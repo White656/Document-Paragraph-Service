@@ -5,7 +5,7 @@ from logging import config as logging_config
 import backoff
 from pydantic import BaseSettings, Field
 
-from core.logger import LOGGING
+from .logger import LOGGING
 
 
 class RedisConfig(BaseSettings):
@@ -17,7 +17,7 @@ class RedisConfig(BaseSettings):
 
 class CeleryConfig(BaseSettings):
     broker_url: str = Field("redis://localhost:6379", env="BROKER_URL", description="url адрес брокера")
-    result_url: str = Field("redis://localhost:6379", env="CELERY_RESULT_BACKEND",
+    backend_url: str = Field("redis://localhost:6379", env="CELERY_RESULT_BACKEND",
                             description="url адрес брокера результатов")
 
 
