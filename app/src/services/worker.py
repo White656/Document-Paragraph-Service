@@ -7,4 +7,4 @@ from db.celery_db import celery
 def create_task(filedata):
     print(filedata)
     time.sleep(10)
-    return True
+    return filedata

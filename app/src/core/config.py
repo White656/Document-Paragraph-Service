@@ -3,9 +3,12 @@ import os
 from logging import config as logging_config
 
 import backoff
+from dotenv import load_dotenv
 from pydantic import BaseSettings, Field
 
 from .logger import LOGGING
+
+load_dotenv()
 
 
 class RedisConfig(BaseSettings):
@@ -16,9 +19,9 @@ class RedisConfig(BaseSettings):
 
 
 class CeleryConfig(BaseSettings):
-    broker_url: str = Field("redis://localhost:6379", env="BROKER_URL", description="url адрес брокера")
+    broker_url: str = Field("redis://localhost:6379", env="CELERY_BROKER_URL", description="url адрес брокера")
     backend_url: str = Field("redis://localhost:6379", env="CELERY_RESULT_BACKEND",
-                            description="url адрес брокера результатов")
+                             description="url адрес брокера результатов")
 
 
 class AppConfig(BaseSettings):

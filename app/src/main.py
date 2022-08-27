@@ -21,6 +21,7 @@ async def startup():
     redis.redis = aioredis.from_url(f'redis://{app_config.redis_config.host}:{app_config.redis_config.port}',
                                     encoding="utf8",
                                     decode_responses=True)
+    print(redis.redis, app_config.redis_config.host, app_config.redis_config.port)
 
 
 @app.on_event('shutdown')

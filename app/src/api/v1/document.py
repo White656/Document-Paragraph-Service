@@ -9,6 +9,5 @@ router = APIRouter()
 @router.post("/upload", summary="Рут для выгрузки файлов и последующей обработки")
 async def create_upload_files(
         file: UploadFile = File(description="A file read as UploadFile", default=None)) -> TaskRunInfo:
-    print(file)
-    task = create_task.delay(filedata=file)
+    task = create_task.delay(filedata=file.filename)
     return TaskRunInfo(id=task.id)
