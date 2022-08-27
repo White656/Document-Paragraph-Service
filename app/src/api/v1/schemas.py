@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.src.models.base import orjson_dumps
 
 
-class UUIDMixing(BaseModel):
+class IdMixing(BaseModel):
     id: str
 
     class Config:

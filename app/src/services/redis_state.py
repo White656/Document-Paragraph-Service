@@ -1,8 +1,8 @@
 import backoff
 from aioredis import Redis
-from pydantic import BaseModel
 
 from core.config import backoff_config
+from models.document import Document
 from services.base import State
 from typing import Any
 
@@ -22,5 +22,5 @@ class RedisStateService(State):
         return data.decode() if data else None
 
     @backoff.on_exception(**backoff_config)
-    def set_state(self, key: str, value: BaseModel | str) -> None:
-        await self._redis.set(key, value.json() if isinstance(value, BaseModel) else value)
+    def set_state(self, key: str, value: Document | str) -> None:
+        await self._redis.set(key, value.json() if isinstance(value, Document) else value)
