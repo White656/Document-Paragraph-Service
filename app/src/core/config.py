@@ -1,6 +1,8 @@
+import logging
 import os
 from logging import config as logging_config
 
+import backoff
 from pydantic import BaseSettings, Field
 
 from core.logger import LOGGING
@@ -22,12 +24,23 @@ class CeleryConfig(BaseSettings):
 class AppConfig(BaseSettings):
     name: str = Field("Document-Paragraph-Service", env="APP_NAME", description="имя приложения")
     cache_time: int = Field(5 * 60, env="CACHE_TIME", description="Время жизни кеша в секундах")
+    backoff_max_retries: int = Field(20, env="BACKOFF_MAX_RETRIES")
     celery_config: CeleryConfig = CeleryConfig()
     redis_config: RedisConfig = RedisConfig()
 
 
 logging_config.dictConfig(LOGGING)
+logger = logging.getLogger(__name__)
 
 app_config = AppConfig()
+
+backoff_config = {
+    "wait_gen": backoff.expo,
+    "exception": Exception,
+    "logger": logger,
+    "max_tries": app_config.backoff_max_retries,
+}  # Роняем контейнер после n-го кол-ва ретраев, т.к. тогда он может быть перезапущен
+# оркестратором в другой локации
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
