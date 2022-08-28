@@ -1,19 +1,22 @@
-from typing import Any
+import shutil
+from functools import lru_cache
 
-from services.base import FileManager
+import docx2txt
+from fastapi import UploadFile
+
+from services.mixin import ReaderMixin, SaverMixin
 
 
-class DocumentService:
-    ...
+class DocXService(ReaderMixin, SaverMixin):
+
+    def save(self, file: UploadFile, file_location: str) -> None:
+        with open(file_location, 'wb+') as file_object:
+            shutil.copyfileobj(file.file, file_object)
+
+    def read(self, file_location: str) -> str:
+        return docx2txt.process(file_location)
 
 
-class DocXManager(FileManager):
-
-    def save(self, file: object, path: str) -> str:
-        raise NotImplementedError
-
-    def read(self, filename: str, path: str) -> Any:
-        raise NotImplementedError
-
-    def delete(self, filename: str, path: str) -> bool:
-        raise NotImplementedError
+@lru_cache()
+def get_docx_service() -> DocXService:
+    return DocXService()
