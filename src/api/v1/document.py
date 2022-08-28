@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File
 
 from api.v1.schemas import TaskRunInfo
-from services.worker import create_task
+from worker import create_task
 
 router = APIRouter()
 

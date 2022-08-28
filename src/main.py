@@ -6,7 +6,7 @@ from fastapi.responses import ORJSONResponse
 from api.v1 import document, tasks
 from core.config import app_config
 from db import redis
-import celery_db
+import worker
 
 app = FastAPI(
     title=app_config.name,
@@ -21,13 +21,12 @@ async def startup():
     redis.redis = aioredis.from_url(f'redis://{app_config.redis_config.host}:{app_config.redis_config.port}',
                                     encoding="utf8",
                                     decode_responses=True)
-    print(redis.redis, app_config.redis_config.host, app_config.redis_config.port)
 
 
 @app.on_event('shutdown')
 async def shutdown():
     await redis.redis.close()
-    await celery_db.celery.close()
+    await worker.celery.close()
 
 
 # Теги указываем для удобства навигации по документации
