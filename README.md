@@ -10,7 +10,7 @@ Spin up the containers:
 $ docker-compose up -d --build
 ```
 
-Open your browser to [http://localhost](http://localhost:80) to view the app or to [http://localhost:5556](http://localhost:5556) to view the Flower dashboard.
+Open your browser to [http://localhost](http://localhost:80) to view the app or to [http://localhost/api/openapi](http://localhost/api/openapi) to view api documentations
 
 Trigger a new task:
 
