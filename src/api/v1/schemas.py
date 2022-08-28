@@ -22,3 +22,5 @@ class CeleryTaskInfo(BaseMixing):
 
 class TaskRunInfo(BaseMixing):
     id: str
+    file_path: str
+    text: str
